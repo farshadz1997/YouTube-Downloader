@@ -30,7 +30,7 @@ if __name__ == "__main__":
     Path_label = Label(win, text = "Save to:").place(x = 60, y = 160)
     Path_Var = StringVar()
     Path_Ent = ttk.Entry(win, textvariable = Path_Var, width = 50, state = DISABLED).place(x = 115, y = 160)
-    command_button = ttk.Button(win, text = "Save to").place(x = 220, y = 185)
+    Path_button = ttk.Button(win, text = "Save to").place(x = 220, y = 185)
     
     #Option menu
     qualities_Var = StringVar()
@@ -38,6 +38,8 @@ if __name__ == "__main__":
     qualities_label = Label(win, text = "Qualities:").place(x = 60, y = 210)
     options = ttk.OptionMenu(win, variable = qualities_Var).place(x = 115, y = 210)
     
+    #download-button
+    dl_button = ttk.Button(win, text = "Download").place(x = 220, y = 420)
     #Progressbar
     pb_Var = DoubleVar()
     pb = ttk.Progressbar(win, variable = pb_Var, length = 300).place(x = 115, y = 450)

@@ -40,6 +40,7 @@ if __name__ == "__main__":
     
     #download-button
     dl_button = ttk.Button(win, text = "Download").place(x = 220, y = 420)
+    
     #Progressbar
     pb_Var = DoubleVar()
     pb = ttk.Progressbar(win, variable = pb_Var, length = 300).place(x = 115, y = 450)

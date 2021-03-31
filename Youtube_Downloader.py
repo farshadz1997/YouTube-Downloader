@@ -7,6 +7,12 @@ from tkinter import filedialog
 import threading
 from tkinter import messagebox as msg
 
+def get_url():
+    yt = YouTube(URL_entry.get())
+    Info_Var.set(f"Title: {yt.title}\n"
+                f"Length: {yt.length // 60}:{yt.length % 60}" )
+        
+
 def Save_to():
     global dir
     dir = filedialog.askdirectory()
@@ -16,9 +22,12 @@ def Paste():
     URL_entry.delete(0, 'end')
     s = pyperclip.paste()
     URL_VAR.set(s)
+    
+def url_thread():
+    threading.Thread(target = get_url, daemon = True).start()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     #win UI
     win = Tk()
     win.title("Youtube Downloader")
@@ -33,7 +42,7 @@ if __name__ == '__main__':
     URL_VAR = StringVar()
     URL_entry = Entry(win, textvariable = URL_VAR, width = 50)
     URL_entry.place(x = 115, y = 100)
-    URL_button = ttk.Button(win, text = "Get URL").place(x = 220, y = 125)
+    URL_button = ttk.Button(win, text = "Get URL", command = url_thread).place(x = 220, y = 125)
 
     #Paste Button
     paste_ico = PhotoImage(file = r"clipboard_paste.png")
@@ -49,7 +58,13 @@ if __name__ == '__main__':
     qualities_Var = StringVar()
     qualities_Var.set("-")
     qualities_label = Label(win, text = "Qualities:").place(x = 60, y = 210)
-    options = ttk.OptionMenu(win, variable = qualities_Var).place(x = 115, y = 210)
+    options = ttk.OptionMenu(win, variable = qualities_Var)
+    options.place(x = 115, y = 210)
+    
+    #Video infos
+    Info_Var = StringVar()
+    Info_label = Message(win, textvariable = Info_Var, width = 200)
+    Info_label.place(x = 60, y = 260)
         
     #download-button
     dl_button = ttk.Button(win, text = "Download").place(x = 220, y = 420)

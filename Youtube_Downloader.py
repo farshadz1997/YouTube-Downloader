@@ -8,11 +8,33 @@ import threading
 from tkinter import messagebox as msg
 
 def get_url():
-    yt = YouTube(URL_entry.get())
-    Info_Var.set(f"Title: {yt.title}\n"
-                f"Length: {yt.length // 60}:{yt.length % 60}" )
+    try:
+        if qualities_Var != "-":
+            qualities_Var.set("-")
+            options["menu"].delete(0, 'end')
+        counter = 0
+        pb.config(mode = "indeterminate")
+        pb.start()
+        yt = YouTube(URL_entry.get())
+        Info_Var.set(f"Title: {yt.title}\n"
+                    f"Length: {yt.length // 60}:{yt.length % 60}")
+        global res_list
+        res_list = {}
+        for stream in yt.streams:
+            if stream.mime_type != "audio/webm" and stream.resolution != None:
+                text = str(stream.resolution) + " - " + str(stream.fps) + "fps - " + str(stream.video_codec)
+                res_list[text] = counter
+                options["menu"].add_command(label = text, command = tk._setit(qualities_Var, text))
+                counter += 1
+        pb.stop()
+        pb.config(mode = "determinate")
+        pb_Var.set(0)
+    except Exception as e:
+        pb.stop()
+        pb.config(mode = "determinate")
+        pb_Var.set(0)
+        msg.showerror("Error", e)
         
-
 def Save_to():
     global dir
     dir = filedialog.askdirectory()
@@ -71,6 +93,7 @@ if __name__ == "__main__":
         
     #Progressbar
     pb_Var = DoubleVar()
-    pb = ttk.Progressbar(win, variable = pb_Var, length = 300).place(x = 115, y = 450)
+    pb = ttk.Progressbar(win, variable = pb_Var, length = 300)
+    pb.place(x = 115, y = 450)
 
     win.mainloop()

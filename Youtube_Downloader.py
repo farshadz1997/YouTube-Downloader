@@ -1,4 +1,4 @@
-from pytube import YouTube
+from pytube import YouTube, request
 import pyperclip
 import tkinter as tk
 from tkinter import *
@@ -6,12 +6,14 @@ from tkinter import ttk
 from tkinter import filedialog
 import threading
 from tkinter import messagebox as msg
+import os
 
 def get_url():
     try:
         if qualities_Var != "-":
             qualities_Var.set("-")
             options["menu"].delete(0, 'end')
+        res_list = {}
         counter = 0
         pb.config(mode = "indeterminate")
         pb.start()
@@ -19,7 +21,7 @@ def get_url():
         Info_Var.set(f"Title: {yt.title}\n"
                     f"Length: {yt.length // 60}:{yt.length % 60}")
         global res_list
-        res_list = {}
+        
         for stream in yt.streams:
             if stream.mime_type != "audio/webm" and stream.resolution != None:
                 text = str(stream.resolution) + " - " + str(stream.fps) + "fps - " + str(stream.video_codec)
@@ -35,10 +37,39 @@ def get_url():
         pb_Var.set(0)
         msg.showerror("Error", e)
         
+def Download(url,directory,audio=False):
+    global res_list
+    qua = qualities_Var.get()
+    percentage_Var.set("connecting...")
+    try:
+        yt = YouTube(url)
+        if (audio):
+            stream = yt.streams.filter(subtype='mp4',only_audio=True).first()
+            directory = directory + '/' + yt.title + '.mp3'
+        else:
+            stream = yt.streams.filter[res_list[qua]]
+            directory = directory + '/' + yt.title + '.mp4'
+        filesize = stream.filesize
+        with open(directory, 'wb') as f:
+            stream = request.stream(stream.url)
+            downloaded = 0
+            while True:
+                chk = next(stream, None)
+                if chk:
+                    f.write(chk)
+                    downloaded += len(chk)
+                    percentage_Var.set(f'downloaded {downloaded} / {filesize}')
+                else:
+                    percentage_Var.set(" ")
+                    msg.showinfo("Done", "Download complete.")
+    except Exception as e:
+        msg.showerror("Error", e)
+                
 def Save_to():
     global dir
     dir = filedialog.askdirectory()
     Path_Var.set(dir)
+    return dir
 
 def Paste():
     URL_entry.delete(0, 'end')
@@ -47,6 +78,9 @@ def Paste():
     
 def url_thread():
     threading.Thread(target = get_url, daemon = True).start()
+    
+def download_thread():
+    threading.Thread(target = Download, args = (URL_entry.get(),dir,False), daemon = True).start()
 
 
 if __name__ == "__main__":
@@ -89,11 +123,17 @@ if __name__ == "__main__":
     Info_label.place(x = 60, y = 260)
         
     #download-button
-    dl_button = ttk.Button(win, text = "Download").place(x = 220, y = 420)
-        
+    dl_button = ttk.Button(win, text = "Download", command = download_thread).place(x = 220, y = 400)
+    
+    #percentage label
+    percentage_Var = StringVar()
+    percentage_label = Label(win, textvariable = percentage_Var)
+    percentage_label.place(x = 222, y = 430)
+            
     #Progressbar
     pb_Var = DoubleVar()
     pb = ttk.Progressbar(win, variable = pb_Var, length = 300)
     pb.place(x = 115, y = 450)
 
     win.mainloop()
+    

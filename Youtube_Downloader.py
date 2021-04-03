@@ -95,6 +95,7 @@ if __name__ == "__main__":
     #win UI
     win = Tk()
     win.title("Youtube Downloader")
+    win.iconbitmap("icon.ico")
     win.geometry("500x500")
     win.resizable(False, False)
             

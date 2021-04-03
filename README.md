@@ -1,7 +1,7 @@
 # Youtube Downloader
 
-Youtube-Downloader is a Python program which works with pytube library for downloading videos.
-Currently in development.
+Youtube-Downloader is a Python program which works with pytube library for downloading videos and it uses progress bar.
+
 
 ## Installation
 

@@ -36,51 +36,41 @@ def get_url():
         pb_Var.set(0)
         msg.showerror("Error", e)
         
-def Download(url,directory,audio=False):
+def Download(url,audio=False):
     qua = qualities_Var.get()
+    path = Path_Ent.get()
     percentage_Var.set("Connecting...")
     dl_button_V ['state'] = 'disabled'
     dl_button_A ['state'] = 'disabled' 
     try:
-        yt = YouTube(url)
+        yt = YouTube(url, on_progress_callback=progress_Check)
         if (audio):
             stream = yt.streams.filter(subtype='mp4',only_audio=True).first()
-            directory = directory + '/' + yt.title + '.mp3'
         else:
             stream = yt.streams[res_list[qua]]
-            directory = directory + '/' + yt.title + '.mp4'
+        global filesize
         filesize = stream.filesize
-        with open(directory, 'wb') as f:
-            stream = request.stream(stream.url)
-            downloaded = 0
-            while True:
-                chunk = next(stream, None)
-                if chunk:
-                    f.write(chunk)
-                    remaining = filesize - downloaded
-                    percent = 100*(filesize - remaining)/filesize
-                    pb_Var.set(percent)
-                    percentage_Var.set('{:00.0f}%'.format(percent))
-                    downloaded += len(chunk)
-                else:
-                    percentage_Var.set("")
-                    pb_Var.set(0)
-                    dl_button_V ['state'] = 'normal'
-                    dl_button_A ['state'] = 'normal'
-                    msg.showinfo("Done", "Download complete.")
-                    break
+        stream.download(path)
     except Exception as e:
+        msg.showerror("Error", e)
+    else:
+        msg.showinfo("Done", "Download complete!")
+    finally:
         percentage_Var.set("")
         pb_Var.set(0)
         dl_button_V ['state'] = 'normal'
-        dl_button_A ['state'] = 'normal' 
-        msg.showerror("Error", e)
+        dl_button_A ['state'] = 'normal'
+ 
+def progress_Check(chunk = None, file_handler = None, bytes_remaining = None):
+    #Gets the percentage of the file that has been downloaded.
+        percent = (100*(filesize - bytes_remaining))/filesize
+        pb_Var.set(percent)
+        percentage_Var.set('{:00.0f}%'.format(percent))
                 
 def Save_to():
     global dir
     dir = filedialog.askdirectory()
     Path_Var.set(dir)
-    return dir
 
 def Paste():
     URL_entry.delete(0, 'end')
@@ -91,10 +81,10 @@ def url_thread():
     threading.Thread(target = get_url, daemon = True).start()
     
 def download_thread_V():
-    threading.Thread(target = Download, args = (URL_entry.get(),dir,False), daemon = True).start()
+    threading.Thread(target = Download, args = (URL_entry.get(),False), daemon = True).start()
     
 def download_thread_A():
-    threading.Thread(target = Download, args = (URL_entry.get(),dir,True), daemon = True).start()
+    threading.Thread(target = Download, args = (URL_entry.get(),True), daemon = True).start()
 
 
 if __name__ == "__main__":
@@ -122,7 +112,8 @@ if __name__ == "__main__":
     #save to
     Path_label = Label(win, text = "Save to:").place(x = 60, y = 160)
     Path_Var = StringVar()
-    Path_Ent = ttk.Entry(win, textvariable = Path_Var, width = 50, state = DISABLED).place(x = 115, y = 160)
+    Path_Ent = ttk.Entry(win, textvariable = Path_Var, width = 50, state = DISABLED)
+    Path_Ent.place(x = 115, y = 160)
     Path_button = ttk.Button(win, text = "Save to", command = Save_to).place(x = 220, y = 185)
             
     #Option menu

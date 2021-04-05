@@ -39,6 +39,8 @@ def get_url():
 def Download(url,directory,audio=False):
     qua = qualities_Var.get()
     percentage_Var.set("Connecting...")
+    dl_button_V ['state'] = 'disabled'
+    dl_button_A ['state'] = 'disabled' 
     try:
         yt = YouTube(url)
         if (audio):
@@ -63,11 +65,15 @@ def Download(url,directory,audio=False):
                 else:
                     percentage_Var.set("")
                     pb_Var.set(0)
+                    dl_button_V ['state'] = 'normal'
+                    dl_button_A ['state'] = 'normal'
                     msg.showinfo("Done", "Download complete.")
                     break
     except Exception as e:
         percentage_Var.set("")
         pb_Var.set(0)
+        dl_button_V ['state'] = 'normal'
+        dl_button_A ['state'] = 'normal' 
         msg.showerror("Error", e)
                 
 def Save_to():
@@ -132,8 +138,10 @@ if __name__ == "__main__":
     Info_label.place(x = 60, y = 260)
             
     #download button
-    dl_button_V = ttk.Button(win, text = "Download Video", command = download_thread_V).place(x = 160, y = 400)
-    dl_button_A = ttk.Button(win, text = "Download Audio", command = download_thread_A).place(x = 260, y = 400)
+    dl_button_V = ttk.Button(win, text = "Download Video", command = download_thread_V)
+    dl_button_V.place(x = 160, y = 400)
+    dl_button_A = ttk.Button(win, text = "Download Audio", command = download_thread_A)
+    dl_button_A.place(x = 260, y = 400)
         
     #percentage label
     percentage_Var = StringVar()

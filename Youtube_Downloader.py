@@ -8,8 +8,10 @@ import threading
 from tkinter import messagebox as msg
 import os
 
+#getting title and qualities
 def get_url():
     try:
+        URL_button ['state'] = 'disabled'
         if qualities_Var != "-":
             qualities_Var.set("-")
             options["menu"].delete(0, 'end')
@@ -27,19 +29,25 @@ def get_url():
                 res_list[text] = counter
                 options["menu"].add_command(label = text, command = tk._setit(qualities_Var, text))
                 counter += 1
-        pb.stop()
-        pb.config(mode = "determinate")
-        pb_Var.set(0)
     except Exception as e:
+        msg.showerror("Error", e)
+    else:
+        dl_button_V ['state'] = 'normal'
+        dl_button_A ['state'] = 'normal'
+    finally:
+        URL_button ['state'] = 'normal'
         pb.stop()
         pb.config(mode = "determinate")
         pb_Var.set(0)
-        msg.showerror("Error", e)
-        
+
+#download function        
 def Download(url,audio=False):
     qua = qualities_Var.get()
     path = Path_Ent.get()
     percentage_Var.set("Connecting...")
+    URL_button ['state'] = 'disabled'
+    Paste_button ['state'] = 'disabled'
+    Path_button ['state'] = 'disabled'
     dl_button_V ['state'] = 'disabled'
     dl_button_A ['state'] = 'disabled' 
     try:
@@ -52,26 +60,40 @@ def Download(url,audio=False):
         filesize = stream.filesize
         stream.download(path)
     except Exception as e:
-        msg.showerror("Error", e)
+        if qua == "-":
+            msg.showerror("Error", "Choose quality for download!")
+        else:    
+            msg.showerror("Error", e)
     else:
         msg.showinfo("Done", "Download complete!")
     finally:
         percentage_Var.set("")
         pb_Var.set(0)
+        URL_button ['state'] = 'normal'
+        Paste_button ['state'] = 'normal'
+        Path_button ['state'] = 'normal'
         dl_button_V ['state'] = 'normal'
         dl_button_A ['state'] = 'normal'
  
+#Gets the percentage of the file that has been downloaded.
 def progress_Check(chunk = None, file_handler = None, bytes_remaining = None):
-    #Gets the percentage of the file that has been downloaded.
         percent = (100*(filesize - bytes_remaining))/filesize
         pb_Var.set(percent)
         percentage_Var.set('{:00.0f}%'.format(percent))
-                
+
+#where to save downloaded file                
 def Save_to():
     global dir
     dir = filedialog.askdirectory()
     Path_Var.set(dir)
 
+#default save address
+def default_file_path():
+    home = os.path.expanduser('~')
+    download_path = os.path.join(home, 'Downloads')
+    Path_Var.set(download_path)
+
+#paste button function
 def Paste():
     URL_entry.delete(0, 'end')
     s = pyperclip.paste()
@@ -103,25 +125,29 @@ if __name__ == "__main__":
     URL_VAR = StringVar()
     URL_entry = Entry(win, textvariable = URL_VAR, width = 50)
     URL_entry.place(x = 115, y = 100)
-    URL_button = ttk.Button(win, text = "Get URL", command = url_thread).place(x = 220, y = 125)
+    URL_button = ttk.Button(win, text = "Get URL", command = url_thread)
+    URL_button.place(x = 220, y = 125)
 
     #Paste Button
     paste_ico = PhotoImage(file = r"clipboard_paste.png")
-    Paste_button = ttk.Button(win, image = paste_ico, width = 3, command = Paste).place(x = 420, y = 98)
+    Paste_button = ttk.Button(win, image = paste_ico, width = 3, command = Paste)
+    Paste_button.place(x = 420, y = 98)
             
     #save to
     Path_label = Label(win, text = "Save to:").place(x = 60, y = 160)
     Path_Var = StringVar()
     Path_Ent = ttk.Entry(win, textvariable = Path_Var, width = 50, state = DISABLED)
     Path_Ent.place(x = 115, y = 160)
-    Path_button = ttk.Button(win, text = "Save to", command = Save_to).place(x = 220, y = 185)
+    default_file_path()
+    Path_button = ttk.Button(win, text = "Save to", command = Save_to)
+    Path_button.place(x = 220, y = 185)
             
     #Option menu
     qualities_Var = StringVar()
     qualities_Var.set("-")
-    qualities_label = Label(win, text = "Qualities:").place(x = 60, y = 210)
+    qualities_label = Label(win, text = "Qualities:").place(x = 60, y = 225)
     options = ttk.OptionMenu(win, variable = qualities_Var)
-    options.place(x = 115, y = 210)
+    options.place(x = 115, y = 225)
         
     #Video infos
     Info_Var = StringVar()
@@ -129,9 +155,9 @@ if __name__ == "__main__":
     Info_label.place(x = 60, y = 260)
             
     #download button
-    dl_button_V = ttk.Button(win, text = "Download Video", command = download_thread_V)
+    dl_button_V = ttk.Button(win, text = "Download Video", state = 'disabled', command = download_thread_V)
     dl_button_V.place(x = 160, y = 400)
-    dl_button_A = ttk.Button(win, text = "Download Audio", command = download_thread_A)
+    dl_button_A = ttk.Button(win, text = "Download Audio", state = 'disabled', command = download_thread_A)
     dl_button_A.place(x = 260, y = 400)
         
     #percentage label
@@ -146,4 +172,3 @@ if __name__ == "__main__":
     pb['maximum'] = 100
 
     win.mainloop()
-    

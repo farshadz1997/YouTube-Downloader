@@ -52,6 +52,7 @@ def Download(url,audio=False):
     dl_button_A ['state'] = 'disabled' 
     try:
         yt = YouTube(url, on_progress_callback=progress_Check)
+        title = yt.title
         if (audio):
             stream = yt.streams.filter(subtype='mp4',only_audio=True).first()
         else:
@@ -60,8 +61,8 @@ def Download(url,audio=False):
         filesize = stream.filesize
         stream.download(path)
     except Exception as e:
-        if qua == "-":
-            msg.showerror("Error", "Choose quality for download!")
+        if qua == "-" and audio is False:
+            msg.showerror("Error", "Choose a quality for download!")
         else:    
             msg.showerror("Error", e)
     else:
@@ -80,10 +81,9 @@ def progress_Check(chunk = None, file_handler = None, bytes_remaining = None):
         percent = (100*(filesize - bytes_remaining))/filesize
         pb_Var.set(percent)
         percentage_Var.set('{:00.0f}%'.format(percent))
-
+    
 #where to save downloaded file                
 def Save_to():
-    global dir
     dir = filedialog.askdirectory()
     Path_Var.set(dir)
 

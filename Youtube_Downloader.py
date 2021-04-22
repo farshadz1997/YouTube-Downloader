@@ -20,7 +20,7 @@ def get_url():
         pb.start()
         yt = YouTube(URL_entry.get())
         Info_Var.set(f"Title: {yt.title}\n"
-                    f"Length: {yt.length // 60}:{yt.length % 60}")
+                    f"Length: {yt.length // 60:02d}:{yt.length % 60:02d}")
         global res_list
         res_list = {}
         for stream in yt.streams:

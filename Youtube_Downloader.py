@@ -80,7 +80,7 @@ def Download(url,audio=False):
 def progress_Check(chunk = None, file_handler = None, bytes_remaining = None):
         percent = (100*(filesize - bytes_remaining))/filesize
         pb_Var.set(percent)
-        percentage_Var.set('{:00.0f}%'.format(percent))
+        percentage_Var.set(f"        {percent:00.0f}%")
     
 #where to save downloaded file                
 def Save_to():

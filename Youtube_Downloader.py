@@ -25,7 +25,7 @@ def get_url():
         res_list = {}
         for stream in yt.streams:
             if stream.mime_type != "audio/webm" and stream.resolution != None and stream.video_codec != "vp9":
-                text = str(stream.resolution) + " - " + str(stream.fps) + "fps - " + str(stream.video_codec)
+                text = str(stream.resolution) + " - " + str(stream.fps) + "fps - " + str(stream.video_codec) + " - " + str(f"{stream.filesize/1000000:.2f}") + " MB " 
                 res_list[text] = counter
                 options["menu"].add_command(label = text, command = tk._setit(qualities_Var, text))
                 counter += 1

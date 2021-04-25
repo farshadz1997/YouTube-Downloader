@@ -50,16 +50,21 @@ def Download(url,audio=False):
     Path_button ['state'] = 'disabled'
     dl_button_V ['state'] = 'disabled'
     dl_button_A ['state'] = 'disabled' 
+    global filesize
     try:
         yt = YouTube(url, on_progress_callback=progress_Check)
         title = yt.title
         if (audio):
             stream = yt.streams.filter(subtype='mp4',only_audio=True).first()
+            filesize = stream.filesize
+            output = stream.download(path)
+            base, ext = os.path.splitext(output)
+            output_mp3 = base + '.mp3'
+            os.rename(output, output_mp3)
         else:
             stream = yt.streams[res_list[qua]]
-        global filesize
-        filesize = stream.filesize
-        stream.download(path)
+            filesize = stream.filesize
+            stream.download(path)
     except Exception as e:
         if qua == "-" and audio is False:
             msg.showerror("Error", "Choose a quality for download!")

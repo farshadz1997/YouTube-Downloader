@@ -1,4 +1,4 @@
-from pytube import YouTube, request
+from pytube import YouTube
 import pyperclip
 import tkinter as tk
 from tkinter import *
@@ -29,11 +29,11 @@ def get_url():
                 res_list[text] = counter
                 options["menu"].add_command(label = text, command = tk._setit(qualities_Var, text))
                 counter += 1
+                if counter == 1:
+                    dl_button_V ['state'] = 'normal'
+                    dl_button_A ['state'] = 'normal'     
     except Exception as e:
         msg.showerror("Error", e)
-    else:
-        dl_button_V ['state'] = 'normal'
-        dl_button_A ['state'] = 'normal'
     finally:
         URL_button ['state'] = 'normal'
         pb.stop()
@@ -114,66 +114,66 @@ def download_thread_A():
     threading.Thread(target = Download, args = (URL_entry.get(),True), daemon = True).start()
 
 
-if __name__ == "__main__":
-    #win UI
-    win = Tk()
-    win.title("Youtube Downloader")
-    win.iconbitmap("icon.ico")
-    win.geometry("500x500")
-    win.resizable(False, False)
-            
-    #title
-    Label_title = Label(win, text = "Youtube Downloader", fg = "red", font = ("Times",30)).place(x = 90, y = 25)
-            
-    #URL
-    URL_label = Label(win, text = "URL:").place(x = 70, y = 100)
-    URL_VAR = StringVar()
-    URL_entry = Entry(win, textvariable = URL_VAR, width = 50)
-    URL_entry.place(x = 115, y = 100)
-    URL_button = ttk.Button(win, text = "Get URL", command = url_thread)
-    URL_button.place(x = 220, y = 125)
-
-    #Paste Button
-    paste_ico = PhotoImage(file = r"clipboard_paste.png")
-    Paste_button = ttk.Button(win, image = paste_ico, width = 3, command = Paste)
-    Paste_button.place(x = 420, y = 98)
-            
-    #save to
-    Path_label = Label(win, text = "Save to:").place(x = 60, y = 160)
-    Path_Var = StringVar()
-    Path_Ent = ttk.Entry(win, textvariable = Path_Var, width = 50, state = DISABLED)
-    Path_Ent.place(x = 115, y = 160)
-    default_file_path()
-    Path_button = ttk.Button(win, text = "Save to", command = Save_to)
-    Path_button.place(x = 220, y = 185)
-            
-    #Option menu
-    qualities_Var = StringVar()
-    qualities_Var.set("-")
-    qualities_label = Label(win, text = "Qualities:").place(x = 60, y = 225)
-    options = ttk.OptionMenu(win, variable = qualities_Var)
-    options.place(x = 115, y = 225)
+#win UI
+win = Tk()
+win.title("Youtube Downloader")
+win.iconbitmap("icon.ico")
+win.geometry("500x500")
+win.resizable(False, False)
         
-    #Video infos
-    Info_Var = StringVar()
-    Info_label = Message(win, textvariable = Info_Var, width = 200)
-    Info_label.place(x = 60, y = 260)
-            
-    #download button
-    dl_button_V = ttk.Button(win, text = "Download Video", state = 'disabled', command = download_thread_V)
-    dl_button_V.place(x = 160, y = 400)
-    dl_button_A = ttk.Button(win, text = "Download Audio", state = 'disabled', command = download_thread_A)
-    dl_button_A.place(x = 260, y = 400)
+#title
+Label_title = Label(win, text = "Youtube Downloader", fg = "red", font = ("Times",30)).place(x = 90, y = 25)
         
-    #percentage label
-    percentage_Var = StringVar()
-    percentage_label = Label(win, textvariable = percentage_Var)
-    percentage_label.place(x = 222, y = 430)
-                
-    #Progressbar
-    pb_Var = DoubleVar()
-    pb = ttk.Progressbar(win, variable = pb_Var, length = 375)
-    pb.place(x = 70, y = 450)
-    pb['maximum'] = 100
+#URL
+getting_links = True
+URL_label = Label(win, text = "URL:").place(x = 70, y = 100)
+URL_VAR = StringVar()
+URL_entry = Entry(win, textvariable = URL_VAR, width = 50)
+URL_entry.place(x = 115, y = 100)
+URL_button = ttk.Button(win, text = "Get URL", command = url_thread)
+URL_button.place(x = 220, y = 125)
 
-    win.mainloop()
+#Paste Button
+paste_ico = PhotoImage(file = r"clipboard_paste.png")
+Paste_button = ttk.Button(win, image = paste_ico, width = 3, command = Paste)
+Paste_button.place(x = 420, y = 98)
+        
+#save to
+Path_label = Label(win, text = "Save to:").place(x = 60, y = 160)
+Path_Var = StringVar()
+Path_Ent = ttk.Entry(win, textvariable = Path_Var, width = 50, state = DISABLED)
+Path_Ent.place(x = 115, y = 160)
+default_file_path()
+Path_button = ttk.Button(win, text = "Save to", command = Save_to)
+Path_button.place(x = 220, y = 185)
+        
+#Option menu
+qualities_Var = StringVar()
+qualities_Var.set("-")
+qualities_label = Label(win, text = "Qualities:").place(x = 60, y = 225)
+options = ttk.OptionMenu(win, variable = qualities_Var)
+options.place(x = 115, y = 225)
+    
+#Video infos
+Info_Var = StringVar()
+Info_label = Message(win, textvariable = Info_Var, width = 200)
+Info_label.place(x = 60, y = 260)
+        
+#download button
+dl_button_V = ttk.Button(win, text = "Download Video", state = 'disabled', command = download_thread_V)
+dl_button_V.place(x = 160, y = 400)
+dl_button_A = ttk.Button(win, text = "Download Audio", state = 'disabled', command = download_thread_A)
+dl_button_A.place(x = 260, y = 400)
+    
+#percentage label
+percentage_Var = StringVar()
+percentage_label = Label(win, textvariable = percentage_Var)
+percentage_label.place(x = 222, y = 430)
+            
+#Progressbar
+pb_Var = DoubleVar()
+pb = ttk.Progressbar(win, variable = pb_Var, length = 375)
+pb.place(x = 70, y = 450)
+pb['maximum'] = 100
+
+win.mainloop()
